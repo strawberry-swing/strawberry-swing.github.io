@@ -1887,15 +1887,11 @@ textarea.form-input::-webkit-resizer { display: none; }
   #LANGUAGE TOGGLE
 \*-----------------------------------*/
 
-.navbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
 .lang-toggle {
+  position: fixed;
+  top: 15px;
+  right: 20px;
+  z-index: 9999;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -1907,10 +1903,10 @@ textarea.form-input::-webkit-resizer { display: none; }
   font-size: 11px;
   font-weight: 600;
   color: var(--light-gray);
-  transition: border-color 0.3s;
+  transition: border-color 0.3s, box-shadow 0.3s;
   white-space: nowrap;
-  flex-shrink: 0;
   letter-spacing: 0.5px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
 }
 
 .lang-toggle:hover { border-color: var(--orange-yellow-crayola); }

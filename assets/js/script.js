@@ -5,34 +5,106 @@
 // ============================================================
 const translations = {
   en: {
-    "nav.about":      "About",
-    "nav.resume":     "Resume",
-    "nav.portfolio":  "Portfolio",
-    "nav.blog":       "Blog",
-    "nav.contact":    "Contact",
-
-    "about.title":         "About me",
+    // Sidebar
+    "sidebar.job-title":   "Web developer",
+    "sidebar.email":       "Email",
+    "sidebar.phone":       "Phone",
+    "sidebar.birthday":    "Birthday",
+    "sidebar.location":    "Location",
     "about.show-contacts": "Show Contacts",
-    "resume.title":        "Resume",
-    "portfolio.title":     "Portfolio",
-    "blog.title":          "Blog",
-    "blog.back":           "Back to Blog",
-    "contact.title":       "Contact",
+
+    // About
+    "about.title":        "About me",
+    "about.services":     "What i'm doing",
+    "about.testimonials": "Testimonials",
+    "about.clients":      "Clients",
+
+    // Services
+    "service.web-design.title": "Web design",
+    "service.web-design.text":  "The most modern and high-quality design made at a professional level.",
+    "service.web-dev.title":    "Web development",
+    "service.web-dev.text":     "High-quality development of sites at the professional level.",
+    "service.mobile.title":     "Mobile apps",
+    "service.mobile.text":      "Professional development of applications for iOS and Android.",
+    "service.photo.title":      "Photography",
+    "service.photo.text":       "I make high-quality photos of any category at a professional level.",
+
+    // Resume
+    "resume.title":      "Resume",
+    "resume.education":  "Education",
+    "resume.experience": "Experience",
+    "resume.skills":     "My skills",
+
+    // Portfolio
+    "portfolio.title":          "Portfolio",
+    "portfolio.filter.all":     "All",
+    "portfolio.filter.web-design": "Web design",
+    "portfolio.filter.apps":    "Applications",
+    "portfolio.filter.web-dev": "Web development",
+    "portfolio.filter.select":  "Select category",
+
+    // Blog
+    "blog.title": "Blog",
+    "blog.back":  "Back to Blog",
+
+    // Contact
+    "contact.title":              "Contact",
+    "contact.form-title":         "Contact Form",
+    "contact.send":               "Send Message",
+    "contact.placeholder.name":   "Full name",
+    "contact.placeholder.email":  "Email address",
+    "contact.placeholder.message": "Your Message",
   },
   zh: {
-    "nav.about":      "关于",
-    "nav.resume":     "简历",
-    "nav.portfolio":  "项目",
-    "nav.blog":       "博客",
-    "nav.contact":    "联系",
-
-    "about.title":         "关于我",
+    // Sidebar
+    "sidebar.job-title":   "Web 开发者",
+    "sidebar.email":       "邮箱",
+    "sidebar.phone":       "电话",
+    "sidebar.birthday":    "生日",
+    "sidebar.location":    "所在地",
     "about.show-contacts": "显示联系方式",
-    "resume.title":        "简历",
-    "portfolio.title":     "项目展示",
-    "blog.title":          "博客",
-    "blog.back":           "返回博客列表",
-    "contact.title":       "联系我",
+
+    // About
+    "about.title":        "关于我",
+    "about.services":     "我的服务",
+    "about.testimonials": "用户评价",
+    "about.clients":      "合作客户",
+
+    // Services
+    "service.web-design.title": "网页设计",
+    "service.web-design.text":  "以专业水准打造最现代、最高质量的设计。",
+    "service.web-dev.title":    "网页开发",
+    "service.web-dev.text":     "以专业水准进行高质量网站开发。",
+    "service.mobile.title":     "移动应用",
+    "service.mobile.text":      "专业开发 iOS 和 Android 应用程序。",
+    "service.photo.title":      "摄影",
+    "service.photo.text":       "以专业水准拍摄各类高质量照片。",
+
+    // Resume
+    "resume.title":      "简历",
+    "resume.education":  "教育经历",
+    "resume.experience": "工作经历",
+    "resume.skills":     "我的技能",
+
+    // Portfolio
+    "portfolio.title":          "项目展示",
+    "portfolio.filter.all":     "全部",
+    "portfolio.filter.web-design": "网页设计",
+    "portfolio.filter.apps":    "应用程序",
+    "portfolio.filter.web-dev": "网页开发",
+    "portfolio.filter.select":  "选择类别",
+
+    // Blog
+    "blog.title": "博客",
+    "blog.back":  "返回博客列表",
+
+    // Contact
+    "contact.title":              "联系我",
+    "contact.form-title":         "联系表单",
+    "contact.send":               "发送消息",
+    "contact.placeholder.name":   "姓名",
+    "contact.placeholder.email":  "邮箱地址",
+    "contact.placeholder.message": "留言内容",
   }
 };
 
@@ -43,6 +115,12 @@ const applyTranslations = (lang) => {
     const key = el.dataset.i18n;
     if (translations[lang]?.[key] !== undefined) {
       el.textContent = translations[lang][key];
+    }
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.dataset.i18nPlaceholder;
+    if (translations[lang]?.[key] !== undefined) {
+      el.placeholder = translations[lang][key];
     }
   });
   document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
@@ -131,7 +209,7 @@ selectItems.forEach(item => {
   item.addEventListener("click", function () {
     if (selectValue) selectValue.innerText = this.innerText;
     if (select) elementToggleFunc(select);
-    filterFunc(this.innerText.toLowerCase());
+    filterFunc(this.dataset.filterValue || this.innerText.toLowerCase());
   });
 });
 
@@ -139,7 +217,7 @@ let lastClickedBtn = filterBtn[0];
 filterBtn.forEach(btn => {
   btn.addEventListener("click", function () {
     if (selectValue) selectValue.innerText = this.innerText;
-    filterFunc(this.innerText.toLowerCase());
+    filterFunc(this.dataset.filterValue || this.innerText.toLowerCase());
     if (lastClickedBtn) lastClickedBtn.classList.remove("active");
     this.classList.add("active");
     lastClickedBtn = this;
