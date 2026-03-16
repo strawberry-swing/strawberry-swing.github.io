@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>vCard - Personal Portfolio</title>
+  <title>Personal Portfolio</title>
 
   <!--
     - favicon
@@ -16,6 +16,11 @@
     - custom css link
   -->
   <link rel="stylesheet" href="./assets/css/style.css">
+
+  <!--
+    - marked.js for markdown rendering
+  -->
+  <script src="https://cdn.jsdelivr.net/npm/marked@9/marked.min.js"></script>
 
   <!--
     - google font link
@@ -52,7 +57,7 @@
         </div>
 
         <button class="info_more-btn" data-sidebar-btn>
-          <span>Show Contacts</span>
+          <span data-i18n="about.show-contacts">Show Contacts</span>
 
           <ion-icon name="chevron-down"></ion-icon>
         </button>
@@ -170,26 +175,33 @@
         <ul class="navbar-list">
 
           <li class="navbar-item">
-            <button class="navbar-link  active" data-nav-link>About</button>
+            <button class="navbar-link  active" data-nav-link data-page-target="about" data-i18n="nav.about">About</button>
           </li>
 
           <li class="navbar-item">
-            <button class="navbar-link" data-nav-link>Resume</button>
+            <button class="navbar-link" data-nav-link data-page-target="resume" data-i18n="nav.resume">Resume</button>
           </li>
 
           <li class="navbar-item">
-            <button class="navbar-link" data-nav-link>Portfolio</button>
+            <button class="navbar-link" data-nav-link data-page-target="portfolio" data-i18n="nav.portfolio">Portfolio</button>
           </li>
 
           <li class="navbar-item">
-            <button class="navbar-link" data-nav-link>Blog</button>
+            <button class="navbar-link" data-nav-link data-page-target="blog" data-i18n="nav.blog">Blog</button>
           </li>
 
           <li class="navbar-item">
-            <button class="navbar-link" data-nav-link>Contact</button>
+            <button class="navbar-link" data-nav-link data-page-target="contact" data-i18n="nav.contact">Contact</button>
           </li>
 
         </ul>
+
+        <!-- Language toggle button -->
+        <button class="lang-toggle" id="lang-toggle" aria-label="Switch Language">
+          <span class="lang-en">EN</span>
+          <span class="lang-track"><span class="lang-thumb"></span></span>
+          <span class="lang-zh">中</span>
+        </button>
 
       </nav>
 
@@ -204,7 +216,7 @@
       <article class="about  active" data-page="about">
 
         <header>
-          <h2 class="h2 article-title">About me</h2>
+          <h2 class="h2 article-title" data-i18n="about.title">About me</h2>
         </header>
 
         <section class="about-text">
@@ -515,7 +527,7 @@
       <article class="resume" data-page="resume">
 
         <header>
-          <h2 class="h2 article-title">Resume</h2>
+          <h2 class="h2 article-title" data-i18n="resume.title">Resume</h2>
         </header>
 
         <section class="timeline">
@@ -708,7 +720,7 @@
       <article class="portfolio" data-page="portfolio">
 
         <header>
-          <h2 class="h2 article-title">Portfolio</h2>
+          <h2 class="h2 article-title" data-i18n="portfolio.title">Portfolio</h2>
         </header>
 
         <section class="projects">
@@ -948,8 +960,29 @@
       <article class="blog" data-page="blog">
 
         <header>
-          <h2 class="h2 article-title">Blog</h2>
+          <h2 class="h2 article-title" data-i18n="blog.title">Blog</h2>
         </header>
+
+        <!-- Blog list view -->
+        <div class="blog-list-view">
+          <section class="blog-posts">
+            <ul class="blog-posts-list" id="blog-posts-list">
+              <!-- dynamically rendered by JS from posts/manifest.json -->
+            </ul>
+          </section>
+        </div>
+
+        <!-- Blog post detail view -->
+        <div class="blog-post-view" style="display:none;">
+          <button class="back-btn" id="blog-back-btn">
+            <ion-icon name="arrow-back-outline"></ion-icon>
+            <span data-i18n="blog.back">Back to Blog</span>
+          </button>
+          <div class="blog-post-content" id="blog-post-content"></div>
+        </div>
+
+        <!-- BELOW: kept as hidden fallback, replaced by dynamic list above -->
+        <div style="display:none;">
 
         <section class="blog-posts">
 
@@ -1127,6 +1160,8 @@
 
         </section>
 
+        </div><!-- end hidden fallback -->
+
       </article>
 
 
@@ -1140,7 +1175,7 @@
       <article class="contact" data-page="contact">
 
         <header>
-          <h2 class="h2 article-title">Contact</h2>
+          <h2 class="h2 article-title" data-i18n="contact.title">Contact</h2>
         </header>
 
         <section class="mapbox" data-mapbox>
