@@ -5,8 +5,13 @@
 // ============================================================
 const translations = {
   en: {
+    // Navbar
+    "nav.about":     "About",
+    "nav.portfolio": "Portfolio",
+    "nav.blog":      "Blog",
+
     // Sidebar
-    "sidebar.job-title":   "Web developer",
+    "sidebar.job-title":   "Agent Security Researcher",
     "sidebar.email":       "Email",
     "sidebar.phone":       "Phone",
     "sidebar.birthday":    "Birthday",
@@ -15,6 +20,8 @@ const translations = {
 
     // About
     "about.title":        "About me",
+    "about.bio1":         "I'm an AI Agent Security Researcher and graduate student at Hangzhou Dianzi University. My research focuses on security evaluation of AI Agents (especially CLI-based agents), designing and testing adversarial experiments including indirect prompt injection attacks on agents like Claude Code.",
+    "about.bio2":         "I have a strong passion for developer tools and CLI automation technologies that boost development efficiency. I've implemented a nano Claude Code from scratch, studied the Claude Agent SDK, and have extensive Vibe Coding experience with Claude Code (6 months), Cursor (1 year), and various other CLI-Agents including Codex, Gemini-CLI, and Qwen Code.",
     "about.services":     "What i'm doing",
     "about.testimonials": "Testimonials",
     "about.clients":      "Clients",
@@ -32,8 +39,25 @@ const translations = {
     // Resume
     "resume.title":      "Resume",
     "resume.education":  "Education",
-    "resume.experience": "Experience",
+    "resume.experience": "Projects & Research",
     "resume.skills":     "My skills",
+
+    // Education
+    "edu.hdu.name": "Hangzhou Dianzi University",
+    "edu.hdu.desc": "Master's degree in Computer Technology. Research focus on AI Agent security evaluation, adversarial experiment design and testing, with emphasis on CLI-based agents. GPA: 4.02/5.",
+    "edu.zstu.name": "Zhejiang Sci-Tech University",
+    "edu.zstu.desc": "Bachelor's degree in Computer Science and Technology.",
+
+    // Experience
+    "exp.benchmark.name": "CLI-Agent Security Benchmark (Research Paper in Progress)",
+    "exp.benchmark.date": "2025 — 2026",
+    "exp.benchmark.desc": "Designed and implemented a security evaluation benchmark for CLI-Agents (e.g., Claude Code), referencing OWASP LLM Top 10 and MITRE ATLAS. Evaluated multiple security risks with a focus on indirect prompt injection—covering Skills poisoning, project poisoning, Agent Memory poisoning, malicious shell command execution, and sensitive data exfiltration. Built an automated evaluation pipeline to test different CLI-Agents and backend LLMs.",
+    "exp.agent.name": "AI Agent Related Projects",
+    "exp.agent.date": "2025 — Present",
+    "exp.agent.desc": "Implemented a minimal Claude Code clone to understand the foundational features of a CLI-Agent, including tool use, skills, subagents, background task execution, and agent-swarms. Studied the Claude Agent SDK. Wrote Agent Skills for automated GPU VRAM and disk usage monitoring using Openclaw-Cron.",
+    "exp.modelops.name": "LLM ModelOps Platform",
+    "exp.modelops.date": "2024 — 2026",
+    "exp.modelops.desc": "Independently led backend service and database design for the lab's LLM fine-tuning platform (similar to Volcano Engine / Alibaba Cloud Bailian). Built REST APIs with Flask connecting the frontend to the underlying model training pipeline, with MongoDB for data management. Supported model inference, fine-tuning task management, training lifecycle tracking, dataset versioning, and Prompt template management.",
 
     // Portfolio
     "portfolio.title":          "Portfolio",
@@ -56,8 +80,13 @@ const translations = {
     "contact.placeholder.message": "Your Message",
   },
   zh: {
+    // Navbar
+    "nav.about":     "关于",
+    "nav.portfolio": "作品集",
+    "nav.blog":      "博客",
+
     // Sidebar
-    "sidebar.job-title":   "Web 开发者",
+    "sidebar.job-title":   "AI Agent 安全研究者",
     "sidebar.email":       "邮箱",
     "sidebar.phone":       "电话",
     "sidebar.birthday":    "生日",
@@ -66,6 +95,8 @@ const translations = {
 
     // About
     "about.title":        "关于我",
+    "about.bio1":         "我是一名 AI Agent 安全研究者，目前就读于杭州电子科技大学计算机技术专业（研究生）。研究方向聚焦于 AI Agent（尤其是 CLI 领域）的安全性评估，设计并测试针对 Claude Code 等 Agent 的间接 Prompt 注入等对抗性实验。",
+    "about.bio2":         "我对开发者工具和 CLI 自动化技术有浓厚兴趣。从零实现过一个 nano Claude Code，深入学习了 Claude Agent SDK，并有丰富的 Vibe Coding 经验：Claude Code 使用半年、Cursor 使用一年，以及 Codex、Gemini-CLI、Qwen Code 等各种国内外 CLI-Agent。",
     "about.services":     "我的服务",
     "about.testimonials": "用户评价",
     "about.clients":      "合作客户",
@@ -83,8 +114,25 @@ const translations = {
     // Resume
     "resume.title":      "简历",
     "resume.education":  "教育经历",
-    "resume.experience": "工作经历",
+    "resume.experience": "项目与科研经历",
     "resume.skills":     "我的技能",
+
+    // Education
+    "edu.hdu.name": "杭州电子科技大学",
+    "edu.hdu.desc": "计算机技术专业，研究生。研究方向聚焦于 AI Agent 安全性评估、对抗性实验设计与测试，重点关注 CLI-Agent 领域。GPA: 4.02/5。",
+    "edu.zstu.name": "浙江理工大学",
+    "edu.zstu.desc": "计算机科学与技术专业，本科。",
+
+    // Experience
+    "exp.benchmark.name": "CLI-Agent 安全性 Benchmark 构建（论文撰写中）",
+    "exp.benchmark.date": "2025 — 2026",
+    "exp.benchmark.desc": "参考 OWASP LLM Top 10 与 MITRE ATLAS 攻击框架，设计并实现了一个面向 CLI-Agent（如 Claude Code）的安全评估 Benchmark。评估多种安全风险，重点关注间接 Prompt 注入对 Agent 命令执行滥用及环境信息泄露的影响，涵盖 Skills 投毒、项目投毒、Agent Memory 投毒、恶意 shell 命令执行及用户敏感信息泄露等场景。构建自动化评测流程，用于测试不同 CLI-Agent 和后端 LLM 的鲁棒性。",
+    "exp.agent.name": "AI Agent 相关项目",
+    "exp.agent.date": "2025 — 至今",
+    "exp.agent.desc": "从零实现了一个最小 Claude Code，深入了解 CLI-Agent 的基础功能，包括工具调用、Skills 接入、Subagents、后台任务执行与监控、Agent-Swarms 等特性。学习了 Claude Agent SDK。针对实验室常见服务器问题，编写了 Agent Skill 自动检测 GPU 显存与硬盘占用情况，并通过 Openclaw-Cron 实现定时自动化检测。",
+    "exp.modelops.name": "LLM ModelOps 平台",
+    "exp.modelops.date": "2024 — 2026",
+    "exp.modelops.desc": "独立负责实验室大语言模型调优平台的后端服务与数据库设计，类似火山方舟、阿里云百炼等 MaaS 平台。基于 Flask 设计并实现平台后端 API，连接前端与底层模型训练流程，使用 MongoDB 管理平台数据。支持模型推理与微调任务的参数配置与管理、训练任务生命周期管理、数据集版本管理及 Prompt 模板管理功能。",
 
     // Portfolio
     "portfolio.title":          "项目展示",
@@ -142,6 +190,7 @@ if (langToggleBtn) {
     localStorage.setItem('lang', currentLang);
     updateLangToggleUI(currentLang);
     applyTranslations(currentLang);
+    if (portfolioManifestCache) renderPortfolioList(portfolioManifestCache);
   });
 }
 
@@ -188,41 +237,57 @@ if (modalCloseBtn) modalCloseBtn.addEventListener("click", testimonialsModalFunc
 if (overlay)       overlay.addEventListener("click", testimonialsModalFunc);
 
 // ============================================================
-// Portfolio Filter
+// Portfolio: Dynamic Loading
 // ============================================================
-const select      = document.querySelector("[data-select]");
-const selectItems = document.querySelectorAll("[data-select-item]");
-const selectValue = document.querySelector("[data-selecct-value]");
-const filterBtn   = document.querySelectorAll("[data-filter-btn]");
-const filterItems = document.querySelectorAll("[data-filter-item]");
+const portfolioList = document.getElementById('portfolio-list');
+let portfolioManifestCache = null;
 
-if (select) select.addEventListener("click", function () { elementToggleFunc(this); });
-
-const filterFunc = (selectedValue) => {
-  filterItems.forEach(item => {
-    const match = selectedValue === "all" || selectedValue === item.dataset.category;
-    item.classList.toggle("active", match);
-  });
+const loadPortfolioManifest = async () => {
+  if (portfolioManifestCache) {
+    renderPortfolioList(portfolioManifestCache);
+    return;
+  }
+  try {
+    const res = await fetch('./portfolio/manifest.json');
+    if (!res.ok) throw new Error('portfolio manifest not found');
+    portfolioManifestCache = await res.json();
+    renderPortfolioList(portfolioManifestCache);
+  } catch (e) {
+    if (portfolioList) {
+      portfolioList.innerHTML = '<li style="padding:20px;color:var(--light-gray-70,#a8a8b3);">No projects yet.</li>';
+    }
+  }
 };
 
-selectItems.forEach(item => {
-  item.addEventListener("click", function () {
-    if (selectValue) selectValue.innerText = this.innerText;
-    if (select) elementToggleFunc(select);
-    filterFunc(this.dataset.filterValue || this.innerText.toLowerCase());
-  });
-});
+const renderPortfolioList = (projects) => {
+  if (!portfolioList) return;
+  portfolioList.innerHTML = projects.map(p => {
+    const title    = currentLang === 'zh' && p.title_zh    ? p.title_zh    : p.title;
+    const category = currentLang === 'zh' && p.category_zh ? p.category_zh : p.category;
+    return `
+    <li class="project-item active" data-filter-item data-category="${p.category}">
+      <a href="${p.link || '#'}" ${p.link && p.link !== '#' ? 'target="_blank" rel="noopener"' : ''}>
+        <figure class="project-img">
+          <div class="project-item-icon-box">
+            <ion-icon name="eye-outline"></ion-icon>
+          </div>
+          ${p.cover ? `<img src="${p.cover}" alt="${title}" loading="lazy">` : ''}
+        </figure>
+        <h3 class="project-title">${title}</h3>
+        <p class="project-category">${category}</p>
+      </a>
+    </li>`;
+  }).join('');
+};
 
-let lastClickedBtn = filterBtn[0];
-filterBtn.forEach(btn => {
-  btn.addEventListener("click", function () {
-    if (selectValue) selectValue.innerText = this.innerText;
-    filterFunc(this.dataset.filterValue || this.innerText.toLowerCase());
-    if (lastClickedBtn) lastClickedBtn.classList.remove("active");
-    this.classList.add("active");
-    lastClickedBtn = this;
-  });
-});
+const portfolioPage = document.querySelector('[data-page="portfolio"]');
+if (portfolioPage) {
+  new MutationObserver(() => {
+    if (portfolioPage.classList.contains('active')) {
+      loadPortfolioManifest();
+    }
+  }).observe(portfolioPage, { attributes: true, attributeFilter: ['class'] });
+}
 
 // ============================================================
 // Contact Form
@@ -245,7 +310,7 @@ formInputs.forEach(input => {
 const navigationLinks = document.querySelectorAll("[data-nav-link]");
 const pages           = document.querySelectorAll("[data-page]");
 
-const VALID_PAGES = ['about', 'resume', 'portfolio', 'blog', 'contact'];
+const VALID_PAGES = ['about', 'portfolio', 'blog'];
 
 const showPage = (pageName) => {
   pages.forEach(page => {
