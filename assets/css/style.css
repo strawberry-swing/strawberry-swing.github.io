@@ -2166,30 +2166,39 @@ textarea.form-input::-webkit-resizer { display: none; }
   font-size: 15px;
 }
 
-/* KaTeX math rendering — dark theme compatibility */
-.blog-post-content .katex {
-  color: inherit;
-  font-size: 1.05em;
-}
+/* KaTeX — dark-theme + responsive math */
+.blog-post-content .katex { color: var(--white-2); font-size: 1.08em; }
 
-.blog-post-content .katex-display {
+.blog-post-content .katex-display-wrapper {
   overflow-x: auto;
   overflow-y: hidden;
-  padding: 6px 0;
-  margin: 20px 0;
+  padding: 12px 0;
+  margin: 16px 0;
+  -webkit-overflow-scrolling: touch;
 }
 
-.blog-post-content .katex-display > .katex {
-  white-space: normal;
+.blog-post-content .katex-display-wrapper > .katex-display {
+  margin: 0;
 }
 
-/* Responsive images (includes raw <img> with inline width) */
+.blog-post-content .katex .tag {
+  position: absolute;
+  right: 0;
+}
+
+/* Responsive images (raw <img> with inline width / markdown images) */
 .blog-post-content img {
   display: block;
   max-width: 100%;
   height: auto;
   border-radius: 10px;
   margin: 16px auto;
+}
+
+/* Underline tags from markdown raw HTML */
+.blog-post-content u {
+  text-decoration-color: var(--orange-yellow-crayola);
+  text-underline-offset: 3px;
 }
 
 .blog-posts-list:empty::after {

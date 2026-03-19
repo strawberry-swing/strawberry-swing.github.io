@@ -439,78 +439,100 @@ const renderBlogList = (posts) => {
   });
 };
 
-// Protect LaTeX math from marked.js processing ($ signs and _ subscripts conflict)
-const protectMath = (md) => {
-  const blocks = [];
-  // Block math $$...$$ first (multiline)
-  md = md.replace(/\$\$([\s\S]*?)\$\$/g, (match) => {
-    blocks.push(match);
-    return `@@MATH_${blocks.length - 1}@@`;
-  });
-  // Inline math $...$ (single line only)
-  md = md.replace(/\$([^$\n]+?)\$/g, (match) => {
-    blocks.push(match);
-    return `@@MATH_${blocks.length - 1}@@`;
-  });
-  return { md, blocks };
+// ============================================================
+// Markdown Rendering Pipeline
+// ============================================================
+
+// Phase 1: Extract all math before marked.js touches the source.
+//   - Block math $$...$$ (multiline)
+//   - Inline math $...$ (allow internal spaces, but not empty)
+//   - Also protect raw HTML <img> tags from marked mangling
+const extractMath = (md) => {
+  const store = [];
+  const push = (content, display) => {
+    store.push({ content, display });
+    return `<span data-math-id="${store.length - 1}"></span>`;
+  };
+  md = md.replace(/\$\$([\s\S]*?)\$\$/g, (_, tex) => push(tex.trim(), true));
+  md = md.replace(/(?<!\$)\$(?!\$)([^\n$]+?)\$(?!\$)/g, (_, tex) => push(tex.trim(), false));
+  return { md, store };
 };
 
-const restoreMath = (html, blocks) =>
-  html.replace(/@@MATH_(\d+)@@/g, (_, i) => blocks[+i]);
+// Phase 2: After marked produces HTML, render each math placeholder with KaTeX.
+const renderMathPlaceholders = (html, store) => {
+  if (typeof katex === 'undefined' || !store.length) return html;
+  return html.replace(/data-math-id="(\d+)"/g, (fullAttr, i) => {
+    const { content, display } = store[+i];
+    try {
+      const rendered = katex.renderToString(content, {
+        displayMode: display,
+        throwOnError: false,
+        trust: true,
+      });
+      return `data-math-id="${i}" data-rendered>${display
+        ? `</span><div class="katex-display-wrapper">${rendered}</div><span`
+        : `</span>${rendered}<span`}`;
+    } catch {
+      return fullAttr;
+    }
+  });
+};
+
+// Phase 3: Fix relative image paths from posts/ subdirectory
+const fixImagePaths = (html) =>
+  html.replace(/(<img\s[^>]*?)src=(["'])images\//gi, '$1src=$2./posts/images/');
+
+// Configure marked for best output
+if (typeof marked !== 'undefined') {
+  marked.setOptions({
+    breaks: false,
+    gfm: true,
+    headerIds: false,
+    mangle: false,
+  });
+}
 
 const loadBlogPost = async (slug) => {
   if (!blogListView || !blogPostView || !blogPostContent) return;
   blogListView.style.display = 'none';
   blogPostView.style.display = 'block';
-  blogPostContent.innerHTML = '<div class="blog-post-loading">Loading...</div>';
+  blogPostContent.innerHTML = '<div class="blog-post-loading">Loading…</div>';
 
   try {
-    // Ensure manifest is loaded (needed for title injection on direct navigation)
-    if (!manifestCache) {
-      try {
-        const mr = await fetch('./posts/manifest.json');
-        if (mr.ok) manifestCache = await mr.json();
-      } catch (_) {}
-    }
+    // Parallel: ensure manifest + fetch the md file at the same time
+    const [mdRes] = await Promise.all([
+      fetch(`./posts/${encodeURIComponent(slug)}.md`),
+      manifestCache ? Promise.resolve() : fetch('./posts/manifest.json')
+        .then(r => r.ok ? r.json() : null)
+        .then(d => { if (d) manifestCache = d; })
+        .catch(() => {}),
+    ]);
+    if (!mdRes.ok) throw new Error('not found');
+    let md = await mdRes.text();
 
-    const res = await fetch(`./posts/${encodeURIComponent(slug)}.md`);
-    if (!res.ok) throw new Error('post not found');
-    let md = await res.text();
-
-    // Inject title from manifest if the file has no leading # heading
-    if (!md.trimStart().startsWith('#')) {
-      const post = manifestCache && manifestCache.find(p => p.slug === slug);
+    // Inject title if the file has no leading # heading
+    if (!/^\s*#/.test(md)) {
+      const post = manifestCache?.find(p => p.slug === slug);
       if (post) {
         const title = currentLang === 'zh' && post.title_zh ? post.title_zh : post.title;
         md = `# ${title}\n\n${md}`;
       }
     }
 
-    // Protect math expressions before marked parses (prevents _ italic conflicts)
-    const { md: safeMd, blocks } = protectMath(md);
-
-    // Parse markdown
+    // Pipeline: extract math → parse markdown → render math → fix images
+    const { md: safeMd, store } = extractMath(md);
     let html = (typeof marked !== 'undefined') ? marked.parse(safeMd) : `<pre>${safeMd}</pre>`;
-
-    // Restore math expressions
-    html = restoreMath(html, blocks);
-
-    // Fix relative image paths: images/ → ./posts/images/
-    html = html.replace(/src="images\//g, 'src="./posts/images/');
-    html = html.replace(/src='images\//g, "src='./posts/images/");
+    html = renderMathPlaceholders(html, store);
+    html = fixImagePaths(html);
 
     blogPostContent.innerHTML = html;
 
-    // Render math with KaTeX
-    if (typeof renderMathInElement !== 'undefined') {
-      renderMathInElement(blogPostContent, {
-        delimiters: [
-          { left: '$$', right: '$$', display: true },
-          { left: '$',  right: '$',  display: false },
-        ],
-        throwOnError: false,
-      });
-    }
+    // Clean up empty wrapper spans left by injection
+    blogPostContent.querySelectorAll('span[data-rendered]').forEach(el => {
+      if (!el.textContent.trim() && !el.children.length) el.remove();
+    });
+
+    window.scrollTo(0, 0);
   } catch (e) {
     blogPostContent.innerHTML = '<p style="color:var(--light-gray-70,#a8a8b3);padding:20px 0;">Post not found.</p>';
   }
