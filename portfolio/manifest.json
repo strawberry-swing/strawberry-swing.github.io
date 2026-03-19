@@ -11,7 +11,7 @@
   },
   {
     "title": "LLM Fine-Tuning Platform (Backend)",
-    "title_zh": "LLM 微调平台（后端）",
+    "title_zh": "LLM 微调平台",
     "category": "mlops",
     "category_zh": "MLOps",
     "cover": "./portfolio/assets/llm-finetuning-cover.png",
@@ -27,6 +27,6 @@
     "cover": "./portfolio/assets/webpractice-cover.png",
     "link": "https://gitee.com/plum_lizimu/webpractice_vitamin",
     "desc": "A modern web practice platform showcasing responsive design, interactive UI components, and modern web development techniques.",
-    "desc_zh": "一个现代化的网页实践平台，展示响应式设计、交互式 UI 组件和最新的网络开发技术。"
+    "desc_zh": "这是一个前后端分离项目，后端采用 Spring Boot + MyBatis，前端为 React。业务围绕“时间胶囊/漂流胶囊/弹幕胶囊”展开。"
   }
 ]
