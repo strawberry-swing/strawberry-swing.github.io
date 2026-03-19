@@ -444,38 +444,76 @@ const renderBlogList = (posts) => {
 // ============================================================
 
 // Phase 1: Extract all math before marked.js touches the source.
-//   - Block math $$...$$ (multiline)
-//   - Inline math $...$ (allow internal spaces, but not empty)
-//   - Also protect raw HTML <img> tags from marked mangling
 const extractMath = (md) => {
   const store = [];
-  const push = (content, display) => {
-    store.push({ content, display });
-    return `<span data-math-id="${store.length - 1}"></span>`;
-  };
-  md = md.replace(/\$\$([\s\S]*?)\$\$/g, (_, tex) => push(tex.trim(), true));
-  md = md.replace(/(?<!\$)\$(?!\$)([^\n$]+?)\$(?!\$)/g, (_, tex) => push(tex.trim(), false));
+  const codeBlocks = [];
+
+  // Protect fenced code blocks and inline code from math extraction
+  md = md.replace(/```[^\n]*\n[\s\S]*?```/g, (m) => {
+    codeBlocks.push(m);
+    return `\x00CODE${codeBlocks.length - 1}\x00`;
+  });
+  md = md.replace(/`[^`\n]+`/g, (m) => {
+    codeBlocks.push(m);
+    return `\x00CODE${codeBlocks.length - 1}\x00`;
+  });
+
+  // Block math $$...$$ → standalone <div> (avoids being wrapped in <p>)
+  md = md.replace(/\$\$([\s\S]*?)\$\$/g, (_, tex) => {
+    const id = store.length;
+    store.push({ content: tex.trim(), display: true });
+    return `\n\n<div data-math-id="${id}"></div>\n\n`;
+  });
+
+  // Inline math $...$ → <span> placeholder
+  md = md.replace(/(?<!\$)\$(?!\$)([^\n$]+?)\$(?!\$)/g, (_, tex) => {
+    const id = store.length;
+    store.push({ content: tex.trim(), display: false });
+    return `<span data-math-id="${id}"></span>`;
+  });
+
+  // Restore code blocks
+  md = md.replace(/\x00CODE(\d+)\x00/g, (_, i) => codeBlocks[+i]);
+
   return { md, store };
 };
 
 // Phase 2: After marked produces HTML, render each math placeholder with KaTeX.
 const renderMathPlaceholders = (html, store) => {
   if (typeof katex === 'undefined' || !store.length) return html;
-  return html.replace(/data-math-id="(\d+)"/g, (fullAttr, i) => {
-    const { content, display } = store[+i];
-    try {
-      const rendered = katex.renderToString(content, {
-        displayMode: display,
-        throwOnError: false,
-        trust: true,
-      });
-      return `data-math-id="${i}" data-rendered>${display
-        ? `</span><div class="katex-display-wrapper">${rendered}</div><span`
-        : `</span>${rendered}<span`}`;
-    } catch {
-      return fullAttr;
+
+  // Block math: <div data-math-id="N"></div> (may be wrapped in <p> as fallback)
+  html = html.replace(
+    /(?:<p>\s*)?<div data-math-id="(\d+)"><\/div>(?:\s*<\/p>)?/g,
+    (_, i) => {
+      const { content } = store[+i];
+      try {
+        const rendered = katex.renderToString(content, {
+          displayMode: true, throwOnError: false, trust: true,
+        });
+        return `<div class="katex-display-wrapper">${rendered}</div>`;
+      } catch {
+        return `<div class="katex-display-wrapper"><pre>${content}</pre></div>`;
+      }
     }
-  });
+  );
+
+  // Inline math: <span data-math-id="N"></span>
+  html = html.replace(
+    /<span data-math-id="(\d+)"><\/span>/g,
+    (_, i) => {
+      const { content } = store[+i];
+      try {
+        return katex.renderToString(content, {
+          displayMode: false, throwOnError: false, trust: true,
+        });
+      } catch {
+        return `<code>${content}</code>`;
+      }
+    }
+  );
+
+  return html;
 };
 
 // Phase 3: Fix relative image paths from posts/ subdirectory
@@ -527,9 +565,14 @@ const loadBlogPost = async (slug) => {
 
     blogPostContent.innerHTML = html;
 
-    // Clean up empty wrapper spans left by injection
-    blogPostContent.querySelectorAll('span[data-rendered]').forEach(el => {
-      if (!el.textContent.trim() && !el.children.length) el.remove();
+    // Wrap tables for horizontal scrolling on narrow screens
+    blogPostContent.querySelectorAll('table').forEach(table => {
+      if (!table.parentElement.classList.contains('table-wrapper')) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'table-wrapper';
+        table.parentNode.insertBefore(wrapper, table);
+        wrapper.appendChild(table);
+      }
     });
 
     window.scrollTo(0, 0);
