@@ -7,7 +7,7 @@
     "category": "Security",
     "excerpt": "A deep dive into CLI-based AI Agent security: datasets, evaluation benchmarks, indirect prompt injection attack vectors, and training pipelines for robustness testing.",
     "excerpt_zh": "深入探讨 CLI-Agent 安全性：训练数据集调研、安全 Benchmark 设计、间接 Prompt 注入攻击向量分析与鲁棒性评测流程构建。",
-    "cover": "./posts/covers/illus-nodepair-coral.png",
+    "cover": "./posts/covers/13-probes-sleepers.png",
     "pinned": true
   },
   {
@@ -18,7 +18,7 @@
     "category": "Agent",
     "excerpt": "Exploring system-aware intelligence in AI Agents — encoding system resource states into agent policy, and reinforcement learning for adaptive execution planning.",
     "excerpt_zh": "探索 AI Agent 的系统感知智能：将系统资源状态编码进 Agent 策略，以强化学习驱动自适应执行规划。",
-    "cover": "./posts/covers/agent-frameworks.png",
+    "cover": "./posts/covers/05-swe-bench.png",
     "pinned": false
   },
   {
@@ -29,7 +29,7 @@
     "category": "LLM",
     "excerpt": "Notes on IRL vs. Behavior Cloning, the 'Era of Experience' paper by Silver & Sutton, and the future of grounded, experience-driven AI reasoning.",
     "excerpt_zh": "逆向强化学习与行为克隆的对比分析，David Silver & Sutton 的「体验时代」论文精读，以及面向经验驱动 AI 推理的未来展望。",
-    "cover": "./posts/covers/illus-cdn-sleeper.png",
+    "cover": "./posts/covers/09-emotional-pref.png",
     "pinned": false
   },
   {
@@ -40,7 +40,7 @@
     "category": "LLM",
     "excerpt": "From the 1991 original MoE paper to modern sparse gating in LLMs. Also covers vLLM continuous batching, PagedAttention, and offline inference experiments.",
     "excerpt_zh": "从 1991 年 MoE 开创性论文到现代 LLM 中的稀疏门控机制，涵盖 vLLM 连续批处理、PagedAttention 原理及离线推理实验记录。",
-    "cover": "./posts/covers/illus-headnode-clay.png",
+    "cover": "./posts/covers/17-hand-headnode-clay.png",
     "pinned": false
   },
   {
@@ -62,7 +62,7 @@
     "category": "Engineering",
     "excerpt": "Practical engineering notes: fixing GitLab Math Block rendering issues, Celery async task architecture for LLM fine-tuning pipelines, and LLaMA-Factory integration.",
     "excerpt_zh": "工程实践笔记：修复 GitLab 公式渲染问题、基于 Celery 的 LLM 微调平台异步任务架构设计，以及 LLaMA-Factory 调试记录。",
-    "cover": "./posts/covers/illus-headnode-heather.png",
+    "cover": "./posts/covers/07-biology-bench.png",
     "pinned": false
   },
   {
@@ -73,7 +73,7 @@
     "category": "Life",
     "excerpt": "Welcome to my blog! This is my first post, written in Markdown and rendered dynamically.",
     "excerpt_zh": "欢迎来到我的博客！这是第一篇用 Markdown 编写并动态渲染的文章。",
-    "cover": "./posts/covers/illus-nodepair-dusk.png",
+    "cover": "./posts/covers/15-hand-nodepair-olive.png",
     "pinned": false
   }
 ]
