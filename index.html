@@ -125,23 +125,11 @@
 
         <ul class="social-list">
 
-          <!-- <li class="social-item">
-            <a href="#" class="social-link">
-              <ion-icon name="logo-facebook"></ion-icon>
+          <li class="social-item">
+            <a href="https://github.com/strawberry-swing" class="social-link" target="_blank" rel="noopener noreferrer">
+              <ion-icon name="logo-github"></ion-icon>
             </a>
           </li>
-
-          <li class="social-item">
-            <a href="#" class="social-link">
-              <ion-icon name="logo-twitter"></ion-icon>
-            </a>
-          </li>
-
-          <li class="social-item">
-            <a href="#" class="social-link">
-              <ion-icon name="logo-instagram"></ion-icon>
-            </a>
-          </li> -->
 
         </ul>
 
@@ -459,7 +447,11 @@
             <ion-icon name="arrow-back-outline"></ion-icon>
             <span data-i18n="blog.back">Back to Blog</span>
           </button>
-          <div class="blog-post-content" id="blog-post-content"></div>
+          <div class="blog-post-meta" id="blog-post-meta"></div>
+          <div class="blog-post-body">
+            <div class="blog-post-content" id="blog-post-content"></div>
+            <nav class="blog-toc" id="blog-toc"></nav>
+          </div>
         </div>
 
 
@@ -470,9 +462,22 @@
   </main>
 
 
-  <!--
-    - custom js link
-  -->
+  <!-- Reading progress bar -->
+  <div class="reading-progress" id="reading-progress"></div>
+
+  <!-- Lightbox overlay for images -->
+  <div class="lightbox-overlay" id="lightbox-overlay">
+    <button class="lightbox-close" id="lightbox-close" aria-label="Close">
+      <ion-icon name="close-outline"></ion-icon>
+    </button>
+    <img class="lightbox-img" id="lightbox-img" src="" alt="">
+  </div>
+
+  <!-- Back to top button -->
+  <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+    <ion-icon name="chevron-up-outline"></ion-icon>
+  </button>
+
   <!-- Fixed language toggle button (top-right corner) -->
   <button class="lang-toggle" id="lang-toggle" aria-label="Switch Language">
     <span class="lang-en">EN</span>

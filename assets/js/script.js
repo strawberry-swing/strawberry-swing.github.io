@@ -575,15 +575,25 @@ const loadBlogPost = async (slug) => {
       }
     });
 
+    renderPostMeta(slug);
+    buildTOC();
+    attachLightboxListeners();
+    updateReadingProgress();
     window.scrollTo(0, 0);
   } catch (e) {
     blogPostContent.innerHTML = '<p style="color:var(--light-gray-70,#a8a8b3);padding:20px 0;">Post not found.</p>';
+    if (blogPostMeta) blogPostMeta.innerHTML = '';
+    if (blogToc) blogToc.innerHTML = '';
   }
 };
 
 const showBlogList = (updateHash = true) => {
   if (blogListView) blogListView.style.display = '';
   if (blogPostView) blogPostView.style.display = 'none';
+  if (tocScrollCleanup) { tocScrollCleanup(); tocScrollCleanup = null; }
+  if (blogToc) blogToc.innerHTML = '';
+  if (blogPostMeta) blogPostMeta.innerHTML = '';
+  if (progressBar) { progressBar.classList.remove('visible'); progressBar.style.width = '0'; }
   if (updateHash) window.location.hash = 'blog';
   loadManifest();
 };
@@ -614,6 +624,161 @@ const formatDate = (dateStr) => {
     return dateStr;
   }
 };
+
+// ============================================================
+// Blog Post Metadata Header (Feature 7)
+// ============================================================
+const blogPostMeta = document.getElementById('blog-post-meta');
+
+const renderPostMeta = (slug) => {
+  if (!blogPostMeta || !manifestCache) return;
+  const post = manifestCache.find(p => p.slug === slug);
+  if (!post) { blogPostMeta.innerHTML = ''; return; }
+  blogPostMeta.innerHTML = `
+    <span class="meta-category">${post.category || 'Article'}</span>
+    <span class="meta-date"><ion-icon name="calendar-outline"></ion-icon>${formatDate(post.date)}</span>
+  `;
+};
+
+// ============================================================
+// Table of Contents — TOC (Feature 3)
+// ============================================================
+const blogToc = document.getElementById('blog-toc');
+let tocScrollCleanup = null;
+
+const buildTOC = () => {
+  // Clean up previous scroll-spy listener
+  if (tocScrollCleanup) { tocScrollCleanup(); tocScrollCleanup = null; }
+
+  if (!blogToc || !blogPostContent) return;
+  const headings = blogPostContent.querySelectorAll('h2, h3, h4');
+  if (headings.length < 3) { blogToc.innerHTML = ''; return; }
+
+  headings.forEach((h, i) => {
+    if (!h.id) h.id = `heading-${i}`;
+  });
+
+  const label = currentLang === 'zh' ? '目录' : 'Contents';
+  let html = `<div class="toc-title">${label}</div><ul>`;
+  headings.forEach(h => {
+    const level = h.tagName.toLowerCase();
+    const text = h.textContent.replace(/^#+\s*/, '').trim();
+    if (!text) return;
+    html += `<li><a href="#${h.id}" class="toc-${level}">${text}</a></li>`;
+  });
+  html += '</ul>';
+  blogToc.innerHTML = html;
+
+  const tocLinks = blogToc.querySelectorAll('a');
+  let rafId = null;
+
+  const updateActiveToc = () => {
+    let current = null;
+    headings.forEach(h => {
+      if (h.getBoundingClientRect().top <= 100) current = h;
+    });
+    tocLinks.forEach(a => {
+      a.classList.toggle('toc-active', current && a.getAttribute('href') === `#${current.id}`);
+    });
+  };
+
+  const onScroll = () => {
+    if (rafId) return;
+    rafId = requestAnimationFrame(() => { updateActiveToc(); rafId = null; });
+  };
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  tocScrollCleanup = () => window.removeEventListener('scroll', onScroll);
+
+  tocLinks.forEach(a => {
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      const target = document.getElementById(a.getAttribute('href').slice(1));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+};
+
+// ============================================================
+// Reading Progress Bar (Feature 4)
+// ============================================================
+const progressBar = document.getElementById('reading-progress');
+
+const updateReadingProgress = () => {
+  if (!progressBar) return;
+  const blogPage = document.querySelector('[data-page="blog"]');
+  const isBlogPost = blogPage?.classList.contains('active') &&
+                     blogPostView?.style.display !== 'none';
+
+  if (!isBlogPost) {
+    progressBar.classList.remove('visible');
+    return;
+  }
+
+  progressBar.classList.add('visible');
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const pct = docHeight > 0 ? Math.min((scrollTop / docHeight) * 100, 100) : 0;
+  progressBar.style.width = `${pct}%`;
+};
+
+window.addEventListener('scroll', updateReadingProgress, { passive: true });
+
+// ============================================================
+// Image Lightbox (Feature 5)
+// ============================================================
+const lightboxOverlay = document.getElementById('lightbox-overlay');
+const lightboxImg = document.getElementById('lightbox-img');
+const lightboxClose = document.getElementById('lightbox-close');
+
+const openLightbox = (src, alt) => {
+  if (!lightboxOverlay || !lightboxImg) return;
+  lightboxImg.src = src;
+  lightboxImg.alt = alt || '';
+  lightboxOverlay.classList.add('active');
+  document.body.style.overflow = 'hidden';
+};
+
+const closeLightbox = () => {
+  if (!lightboxOverlay) return;
+  lightboxOverlay.classList.remove('active');
+  document.body.style.overflow = '';
+};
+
+if (lightboxClose) lightboxClose.addEventListener('click', closeLightbox);
+if (lightboxOverlay) {
+  lightboxOverlay.addEventListener('click', (e) => {
+    if (e.target === lightboxOverlay || e.target === lightboxImg) closeLightbox();
+  });
+}
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeLightbox();
+});
+
+const attachLightboxListeners = () => {
+  if (!blogPostContent) return;
+  blogPostContent.querySelectorAll('img').forEach(img => {
+    img.addEventListener('click', () => openLightbox(img.src, img.alt));
+  });
+};
+
+// ============================================================
+// Back to Top Button (Feature 6)
+// ============================================================
+const backToTopBtn = document.getElementById('back-to-top');
+
+const updateBackToTop = () => {
+  if (!backToTopBtn) return;
+  backToTopBtn.classList.toggle('visible', window.scrollY > 400);
+};
+
+window.addEventListener('scroll', updateBackToTop, { passive: true });
+
+if (backToTopBtn) {
+  backToTopBtn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+}
 
 // ============================================================
 // Init
