@@ -191,6 +191,7 @@ if (langToggleBtn) {
     updateLangToggleUI(currentLang);
     applyTranslations(currentLang);
     if (portfolioManifestCache) renderPortfolioList(portfolioManifestCache);
+    if (manifestCache) renderBlogList(manifestCache);
   });
 }
 
@@ -399,11 +400,22 @@ const loadManifest = async () => {
 
 const renderBlogList = (posts) => {
   if (!blogPostsList) return;
-  blogPostsList.innerHTML = posts.map(post => `
-    <li class="blog-post-item">
+
+  const sorted = [...posts].sort((a, b) => {
+    if (a.pinned && !b.pinned) return -1;
+    if (!a.pinned && b.pinned) return 1;
+    return new Date(b.date) - new Date(a.date);
+  });
+
+  blogPostsList.innerHTML = sorted.map(post => {
+    const title   = currentLang === 'zh' && post.title_zh   ? post.title_zh   : post.title;
+    const excerpt = currentLang === 'zh' && post.excerpt_zh ? post.excerpt_zh : (post.excerpt || '');
+    return `
+    <li class="blog-post-item${post.pinned ? ' blog-post-pinned' : ''}">
       <a href="#blog/${post.slug}" class="blog-post-link" data-slug="${post.slug}">
+        ${post.pinned ? '<span class="pin-badge"><ion-icon name="pin"></ion-icon></span>' : ''}
         ${post.cover
-          ? `<figure class="blog-banner-box"><img src="${post.cover}" alt="${post.title}" loading="lazy"></figure>`
+          ? `<figure class="blog-banner-box"><img src="${post.cover}" alt="${title}" loading="lazy"></figure>`
           : ''}
         <div class="blog-content">
           <div class="blog-meta">
@@ -411,12 +423,12 @@ const renderBlogList = (posts) => {
             <span class="dot"></span>
             <time datetime="${post.date}">${formatDate(post.date)}</time>
           </div>
-          <h3 class="h3 blog-item-title">${post.title}</h3>
-          <p class="blog-text">${post.excerpt || ''}</p>
+          <h3 class="h3 blog-item-title">${title}</h3>
+          <p class="blog-text">${excerpt}</p>
         </div>
       </a>
-    </li>
-  `).join('');
+    </li>`;
+  }).join('');
 
   blogPostsList.querySelectorAll('.blog-post-link').forEach(link => {
     link.addEventListener('click', e => {
