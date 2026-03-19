@@ -1,12 +1,32 @@
 [
   {
-    "title": "Demo Project",
-    "title_zh": "示例项目",
-    "category": "research",
-    "category_zh": "科研",
-    "cover": "",
-    "link": "#",
-    "desc": "This is a demo portfolio item. Replace with your own projects.",
-    "desc_zh": "这是一个示例作品条目，请替换为你自己的项目。"
+    "title": "learn-claude-code",
+    "title_zh": "learn-claude-code",
+    "category": "agent",
+    "category_zh": "Agent 开发",
+    "cover": "./portfolio/assets/learn-claude-code-cover.png",
+    "link": "https://github.com/strawberry-swing/learn-claude-code",
+    "desc": "A minimal Claude Code clone built from scratch to explore the core mechanics of a CLI-based AI Agent — including tool use, skills, subagents, background tasks, and agent-swarms.",
+    "desc_zh": "从零实现的最小 Claude Code，深入探索 CLI-Agent 的核心机制，涵盖工具调用、Skills 接入、Subagents、后台任务执行与 Agent-Teams 等特性。"
+  },
+  {
+    "title": "LLM Fine-Tuning Platform (Backend)",
+    "title_zh": "LLM 微调平台（后端）",
+    "category": "mlops",
+    "category_zh": "MLOps",
+    "cover": "./portfolio/assets/llm-finetuning-cover.png",
+    "link": "https://gitee.com/yue-liantian/llm-ft-backend",
+    "desc": "Backend service for a lab-grade LLM fine-tuning platform (similar to Volcano Engine / Alibaba Cloud Bailian). Built with Flask + MongoDB, supporting model inference, fine-tuning task management, dataset versioning, and Prompt template management.",
+    "desc_zh": "实验室 LLM 微调平台的后端服务，类似火山方舟、阿里云百炼。基于 Flask + MongoDB 构建，支持模型推理与微调任务管理、训练生命周期追踪、数据集版本管理及 Prompt 模板管理。"
+  },
+  {
+    "title": "WebPractice Vitamin",
+    "title_zh": "WebPractice Vitamin",
+    "category": "web",
+    "category_zh": "Web 开发",
+    "cover": "./portfolio/assets/webpractice-cover.png",
+    "link": "https://gitee.com/plum_lizimu/webpractice_vitamin",
+    "desc": "A modern web practice platform showcasing responsive design, interactive UI components, and modern web development techniques.",
+    "desc_zh": "一个现代化的网页实践平台，展示响应式设计、交互式 UI 组件和最新的网络开发技术。"
   }
 ]

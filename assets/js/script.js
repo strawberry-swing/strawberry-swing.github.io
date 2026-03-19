@@ -259,22 +259,37 @@ const loadPortfolioManifest = async () => {
   }
 };
 
+const CATEGORY_ICONS = {
+  agent:   'terminal-outline',
+  mlops:   'server-outline',
+  research:'flask-outline',
+  web:     'globe-outline',
+  default: 'code-slash-outline',
+};
+
 const renderPortfolioList = (projects) => {
   if (!portfolioList) return;
   portfolioList.innerHTML = projects.map(p => {
     const title    = currentLang === 'zh' && p.title_zh    ? p.title_zh    : p.title;
     const category = currentLang === 'zh' && p.category_zh ? p.category_zh : p.category;
+    const desc     = currentLang === 'zh' && p.desc_zh     ? p.desc_zh     : (p.desc || '');
+    const icon     = CATEGORY_ICONS[p.category] || CATEGORY_ICONS.default;
+    const isExternal = p.link && p.link !== '#';
     return `
     <li class="project-item active" data-filter-item data-category="${p.category}">
-      <a href="${p.link || '#'}" ${p.link && p.link !== '#' ? 'target="_blank" rel="noopener"' : ''}>
+      <a href="${p.link || '#'}" ${isExternal ? 'target="_blank" rel="noopener noreferrer"' : ''}>
         <figure class="project-img">
           <div class="project-item-icon-box">
             <ion-icon name="eye-outline"></ion-icon>
           </div>
-          ${p.cover ? `<img src="${p.cover}" alt="${title}" loading="lazy">` : ''}
+          ${p.cover
+            ? `<img src="${p.cover}" alt="${title}" loading="lazy">`
+            : `<div class="project-img-placeholder"><ion-icon name="${icon}"></ion-icon></div>`
+          }
         </figure>
         <h3 class="project-title">${title}</h3>
         <p class="project-category">${category}</p>
+        ${desc ? `<p class="project-desc">${desc}</p>` : ''}
       </a>
     </li>`;
   }).join('');
