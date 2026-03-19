@@ -439,6 +439,25 @@ const renderBlogList = (posts) => {
   });
 };
 
+// Protect LaTeX math from marked.js processing ($ signs and _ subscripts conflict)
+const protectMath = (md) => {
+  const blocks = [];
+  // Block math $$...$$ first (multiline)
+  md = md.replace(/\$\$([\s\S]*?)\$\$/g, (match) => {
+    blocks.push(match);
+    return `@@MATH_${blocks.length - 1}@@`;
+  });
+  // Inline math $...$ (single line only)
+  md = md.replace(/\$([^$\n]+?)\$/g, (match) => {
+    blocks.push(match);
+    return `@@MATH_${blocks.length - 1}@@`;
+  });
+  return { md, blocks };
+};
+
+const restoreMath = (html, blocks) =>
+  html.replace(/@@MATH_(\d+)@@/g, (_, i) => blocks[+i]);
+
 const loadBlogPost = async (slug) => {
   if (!blogListView || !blogPostView || !blogPostContent) return;
   blogListView.style.display = 'none';
@@ -446,12 +465,52 @@ const loadBlogPost = async (slug) => {
   blogPostContent.innerHTML = '<div class="blog-post-loading">Loading...</div>';
 
   try {
-    const res = await fetch(`./posts/${slug}.md`);
+    // Ensure manifest is loaded (needed for title injection on direct navigation)
+    if (!manifestCache) {
+      try {
+        const mr = await fetch('./posts/manifest.json');
+        if (mr.ok) manifestCache = await mr.json();
+      } catch (_) {}
+    }
+
+    const res = await fetch(`./posts/${encodeURIComponent(slug)}.md`);
     if (!res.ok) throw new Error('post not found');
-    const md = await res.text();
-    blogPostContent.innerHTML = (typeof marked !== 'undefined')
-      ? marked.parse(md)
-      : `<pre>${md}</pre>`;
+    let md = await res.text();
+
+    // Inject title from manifest if the file has no leading # heading
+    if (!md.trimStart().startsWith('#')) {
+      const post = manifestCache && manifestCache.find(p => p.slug === slug);
+      if (post) {
+        const title = currentLang === 'zh' && post.title_zh ? post.title_zh : post.title;
+        md = `# ${title}\n\n${md}`;
+      }
+    }
+
+    // Protect math expressions before marked parses (prevents _ italic conflicts)
+    const { md: safeMd, blocks } = protectMath(md);
+
+    // Parse markdown
+    let html = (typeof marked !== 'undefined') ? marked.parse(safeMd) : `<pre>${safeMd}</pre>`;
+
+    // Restore math expressions
+    html = restoreMath(html, blocks);
+
+    // Fix relative image paths: images/ → ./posts/images/
+    html = html.replace(/src="images\//g, 'src="./posts/images/');
+    html = html.replace(/src='images\//g, "src='./posts/images/");
+
+    blogPostContent.innerHTML = html;
+
+    // Render math with KaTeX
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(blogPostContent, {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '$',  right: '$',  display: false },
+        ],
+        throwOnError: false,
+      });
+    }
   } catch (e) {
     blogPostContent.innerHTML = '<p style="color:var(--light-gray-70,#a8a8b3);padding:20px 0;">Post not found.</p>';
   }

@@ -2063,6 +2063,18 @@ textarea.form-input::-webkit-resizer { display: none; }
 }
 .blog-post-content h3 { font-size: 17px; }
 .blog-post-content h4 { font-size: 15px; }
+.blog-post-content h5 {
+  font-size: 13px;
+  font-weight: var(--fw-600, 600);
+  color: var(--light-gray-70, #a8a8b3);
+  margin: 18px 0 6px;
+}
+.blog-post-content h6 {
+  font-size: 12px;
+  font-weight: var(--fw-600, 600);
+  color: var(--light-gray-70, #a8a8b3);
+  margin: 14px 0 6px;
+}
 
 .blog-post-content p { margin-bottom: 16px; }
 
@@ -2152,6 +2164,32 @@ textarea.form-input::-webkit-resizer { display: none; }
   padding: 60px 20px;
   color: var(--light-gray-70, #a8a8b3);
   font-size: 15px;
+}
+
+/* KaTeX math rendering — dark theme compatibility */
+.blog-post-content .katex {
+  color: inherit;
+  font-size: 1.05em;
+}
+
+.blog-post-content .katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 6px 0;
+  margin: 20px 0;
+}
+
+.blog-post-content .katex-display > .katex {
+  white-space: normal;
+}
+
+/* Responsive images (includes raw <img> with inline width) */
+.blog-post-content img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+  margin: 16px auto;
 }
 
 .blog-posts-list:empty::after {
