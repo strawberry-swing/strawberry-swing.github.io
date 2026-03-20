@@ -28,6 +28,7 @@
   -->
   <script defer src="https://cdn.jsdelivr.net/npm/marked@9/marked.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="./assets/js/script.js"></script>
 
   <!--
     - google font link
@@ -137,8 +138,10 @@
 
     </aside>
 
-
-
+    <!-- Blog reading sidebar (TOC) — replaces personal sidebar when reading a post -->
+    <aside class="blog-sidebar" id="blog-sidebar">
+      <nav class="blog-toc" id="blog-toc"></nav>
+    </aside>
 
 
     <!--
@@ -448,10 +451,7 @@
             <span data-i18n="blog.back">Back to Blog</span>
           </button>
           <div class="blog-post-meta" id="blog-post-meta"></div>
-          <div class="blog-post-body">
-            <div class="blog-post-content" id="blog-post-content"></div>
-            <nav class="blog-toc" id="blog-toc"></nav>
-          </div>
+          <div class="blog-post-content" id="blog-post-content"></div>
         </div>
 
 
@@ -484,8 +484,6 @@
     <span class="lang-track"><span class="lang-thumb"></span></span>
     <span class="lang-zh">中</span>
   </button>
-
-  <script src="./assets/js/script.js"></script>
 
   <!--
     - ionicon link

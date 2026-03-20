@@ -335,6 +335,10 @@ const showPage = (pageName) => {
   navigationLinks.forEach(link => {
     link.classList.toggle("active", link.dataset.pageTarget === pageName);
   });
+  if (pageName !== 'blog') {
+    const m = document.querySelector('main');
+    if (m) m.classList.remove('reading-mode');
+  }
   window.scrollTo(0, 0);
 };
 
@@ -520,20 +524,26 @@ const renderMathPlaceholders = (html, store) => {
 const fixImagePaths = (html) =>
   html.replace(/(<img\s[^>]*?)src=(["'])images\//gi, '$1src=$2./posts/images/');
 
-// Configure marked for best output
+// Configure marked (now guaranteed available via defer ordering)
 if (typeof marked !== 'undefined') {
-  marked.setOptions({
-    breaks: false,
-    gfm: true,
-    headerIds: false,
-    mangle: false,
-  });
+  marked.setOptions({ breaks: false, gfm: true });
 }
+
+// Reading-mode: swap personal sidebar for TOC sidebar
+const mainEl = document.querySelector('main');
+
+const enterReadingMode = () => {
+  if (mainEl) mainEl.classList.add('reading-mode');
+};
+const exitReadingMode = () => {
+  if (mainEl) mainEl.classList.remove('reading-mode');
+};
 
 const loadBlogPost = async (slug) => {
   if (!blogListView || !blogPostView || !blogPostContent) return;
   blogListView.style.display = 'none';
   blogPostView.style.display = 'block';
+  enterReadingMode();
   blogPostContent.innerHTML = '<div class="blog-post-loading">Loading…</div>';
 
   try {
@@ -588,6 +598,7 @@ const loadBlogPost = async (slug) => {
 };
 
 const showBlogList = (updateHash = true) => {
+  exitReadingMode();
   if (blogListView) blogListView.style.display = '';
   if (blogPostView) blogPostView.style.display = 'none';
   if (tocScrollCleanup) { tocScrollCleanup(); tocScrollCleanup = null; }
@@ -659,7 +670,7 @@ const buildTOC = () => {
   });
 
   const label = currentLang === 'zh' ? '目录' : 'Contents';
-  let html = `<div class="toc-title">${label}</div><ul>`;
+  let html = `<div class="toc-title"><ion-icon name="list-outline"></ion-icon>${label}</div><ul>`;
   headings.forEach(h => {
     const level = h.tagName.toLowerCase();
     const text = h.textContent.replace(/^#+\s*/, '').trim();
