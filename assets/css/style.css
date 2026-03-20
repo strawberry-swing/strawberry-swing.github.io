@@ -2194,7 +2194,8 @@ textarea.form-input::-webkit-resizer { display: none; }
   font-size: 15px;
 }
 
-/* KaTeX — undo global "span { display:block }" reset that breaks math layout */
+/* KaTeX — isolate from global CSS reset (span{display:block}, *{box-sizing:border-box}) */
+.katex, .katex * { box-sizing: content-box; }
 .katex span { display: inline; }
 .blog-post-content .katex { display: inline; color: var(--white-2); font-size: 1.08em; }
 .blog-post-content .katex-display > .katex { display: block; text-align: center; }
@@ -2208,20 +2209,14 @@ textarea.form-input::-webkit-resizer { display: none; }
   -webkit-overflow-scrolling: touch;
 }
 
+.blog-post-content .katex-display-wrapper > .katex-display { margin: 0; }
+.blog-post-content .katex .tag { position: absolute; right: 0; }
+
 /* Combined formatting: bold + underline, etc. */
 .blog-post-content strong u,
 .blog-post-content u strong {
   text-decoration-color: var(--orange-yellow-crayola);
   text-underline-offset: 3px;
-}
-
-.blog-post-content .katex-display-wrapper > .katex-display {
-  margin: 0;
-}
-
-.blog-post-content .katex .tag {
-  position: absolute;
-  right: 0;
 }
 
 /* Responsive images (raw <img> with inline width / markdown images) */
