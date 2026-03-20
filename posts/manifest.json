@@ -1,5 +1,16 @@
 [
   {
+    "slug": "上下文缓存经济学",
+    "title": "LLM Context/Prompt Cache Ecnomics",
+    "title_zh": "大模型上下文缓存经济学：别让你的Agent\"烧钱\"",
+    "date": "2026-03-20",
+    "category": "Agent",
+    "excerpt": "The \"edit messages, modify history, and DIY context\" operations that you take for granted can increase the cost by 7 to 50 times in LLM Agent. This article helps you develop a cache awareness to avoid a cost disaster.",
+    "excerpt_zh": "你习以为常的\"编辑消息、修改历史、DIY上下文\"操作，在LLM Agent中会让成本暴增7-50倍。本文帮你建立缓存意识，避免成本灾难。",
+    "cover": "./posts/covers/05-swe-bench.png",
+    "pinned": false
+  },
+  {
     "slug": "Agent安全与Benchmark",
     "title": "CLI-Agent Security & Benchmark",
     "title_zh": "CLI-Agent 安全性与 Benchmark 构建",
