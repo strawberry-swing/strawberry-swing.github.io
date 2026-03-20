@@ -70,6 +70,7 @@ const translations = {
     // Blog
     "blog.title": "Blog",
     "blog.back":  "Back to Blog",
+    "blog.filter.all": "All",
 
     // Contact
     "contact.title":              "Contact",
@@ -145,6 +146,7 @@ const translations = {
     // Blog
     "blog.title": "博客",
     "blog.back":  "返回博客列表",
+    "blog.filter.all": "全部",
 
     // Contact
     "contact.title":              "联系我",
@@ -157,6 +159,21 @@ const translations = {
 };
 
 let currentLang = localStorage.getItem('lang') || 'en';
+
+// ============================================================
+// Tag Labels (i18n)
+// ============================================================
+const TAG_LABELS = {
+  Security:    { en: 'Security',    zh: '安全' },
+  Agent:       { en: 'Agent',       zh: '智能体' },
+  LLM:         { en: 'LLM',         zh: '大模型' },
+  Engineering: { en: 'Engineering', zh: '工程' },
+  Life:        { en: 'Life',        zh: '生活' },
+};
+const getTagLabel = (tag) => {
+  const e = TAG_LABELS[tag];
+  return e ? (currentLang === 'zh' ? e.zh : e.en) : tag;
+};
 
 const applyTranslations = (lang) => {
   document.querySelectorAll('[data-i18n]').forEach(el => {
@@ -270,7 +287,11 @@ const CATEGORY_ICONS = {
 
 const renderPortfolioList = (projects) => {
   if (!portfolioList) return;
-  portfolioList.innerHTML = projects.map(p => {
+
+  const start = (currentPortfolioPage - 1) * PORTFOLIO_PAGE_SIZE;
+  const paged = projects.slice(start, start + PORTFOLIO_PAGE_SIZE);
+
+  portfolioList.innerHTML = paged.map(p => {
     const title    = currentLang === 'zh' && p.title_zh    ? p.title_zh    : p.title;
     const category = currentLang === 'zh' && p.category_zh ? p.category_zh : p.category;
     const desc     = currentLang === 'zh' && p.desc_zh     ? p.desc_zh     : (p.desc || '');
@@ -294,6 +315,13 @@ const renderPortfolioList = (projects) => {
       </a>
     </li>`;
   }).join('');
+
+  renderPagination('portfolio-pagination', currentPortfolioPage, projects.length, PORTFOLIO_PAGE_SIZE, (page) => {
+    currentPortfolioPage = page;
+    renderPortfolioList(portfolioManifestCache);
+    const header = document.querySelector('[data-page="portfolio"] .article-title');
+    if (header) header.scrollIntoView({ behavior: 'smooth' });
+  });
 };
 
 const portfolioPage = document.querySelector('[data-page="portfolio"]');
@@ -384,6 +412,11 @@ const blogPostContent = document.getElementById('blog-post-content');
 const blogBackBtn    = document.getElementById('blog-back-btn');
 
 let manifestCache = null;
+let activeTag = 'All';
+let currentBlogPage = 1;
+const BLOG_PAGE_SIZE = 8;
+let currentPortfolioPage = 1;
+const PORTFOLIO_PAGE_SIZE = 9;
 
 const loadManifest = async () => {
   if (manifestCache) {
@@ -402,8 +435,88 @@ const loadManifest = async () => {
   }
 };
 
+// ============================================================
+// Tag Filter
+// ============================================================
+const renderTagFilter = (posts) => {
+  const container = document.getElementById('blog-tag-filter');
+  if (!container) return;
+
+  const tagSet = new Set();
+  posts.forEach(p => {
+    const tags = p.tags || (p.category ? [p.category] : []);
+    tags.forEach(t => tagSet.add(t));
+  });
+
+  const allLabel = currentLang === 'zh'
+    ? translations.zh['blog.filter.all']
+    : translations.en['blog.filter.all'];
+
+  let html = `<button class="tag-filter-chip${activeTag === 'All' ? ' active' : ''}" data-tag="All">${allLabel}</button>`;
+  tagSet.forEach(tag => {
+    html += `<button class="tag-filter-chip${activeTag === tag ? ' active' : ''}" data-tag="${tag}">${getTagLabel(tag)}</button>`;
+  });
+  container.innerHTML = html;
+
+  container.querySelectorAll('.tag-filter-chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeTag = btn.dataset.tag;
+      currentBlogPage = 1;
+      renderBlogList(manifestCache);
+    });
+  });
+};
+
+// ============================================================
+// Pagination
+// ============================================================
+const renderPagination = (containerId, currentPage, totalItems, pageSize, onPageChange) => {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  const totalPages = Math.ceil(totalItems / pageSize);
+  if (totalPages <= 1) { container.innerHTML = ''; return; }
+
+  let html = '';
+
+  html += `<button class="page-btn page-prev"${currentPage <= 1 ? ' disabled' : ''} data-page="${currentPage - 1}">
+    <ion-icon name="chevron-back-outline"></ion-icon></button>`;
+
+  let endPage = Math.min(totalPages, currentPage + 2);
+  let startPage = Math.max(1, endPage - 4);
+  endPage = Math.min(totalPages, startPage + 4);
+
+  if (startPage > 1) {
+    html += `<button class="page-btn" data-page="1">1</button>`;
+    if (startPage > 2) html += `<span class="page-ellipsis">...</span>`;
+  }
+  for (let i = startPage; i <= endPage; i++) {
+    html += `<button class="page-btn${i === currentPage ? ' active' : ''}" data-page="${i}">${i}</button>`;
+  }
+  if (endPage < totalPages) {
+    if (endPage < totalPages - 1) html += `<span class="page-ellipsis">...</span>`;
+    html += `<button class="page-btn" data-page="${totalPages}">${totalPages}</button>`;
+  }
+
+  html += `<button class="page-btn page-next"${currentPage >= totalPages ? ' disabled' : ''} data-page="${currentPage + 1}">
+    <ion-icon name="chevron-forward-outline"></ion-icon></button>`;
+
+  container.innerHTML = html;
+
+  container.querySelectorAll('.page-btn:not([disabled])').forEach(btn => {
+    btn.addEventListener('click', () => {
+      onPageChange(parseInt(btn.dataset.page, 10));
+    });
+  });
+};
+
+// ============================================================
+// Blog List Rendering
+// ============================================================
 const renderBlogList = (posts) => {
   if (!blogPostsList) return;
+
+  renderTagFilter(posts);
 
   const sorted = [...posts].sort((a, b) => {
     if (a.pinned && !b.pinned) return -1;
@@ -411,9 +524,17 @@ const renderBlogList = (posts) => {
     return new Date(b.date) - new Date(a.date);
   });
 
-  blogPostsList.innerHTML = sorted.map(post => {
+  const filtered = activeTag === 'All'
+    ? sorted
+    : sorted.filter(p => (p.tags || (p.category ? [p.category] : [])).includes(activeTag));
+
+  const start = (currentBlogPage - 1) * BLOG_PAGE_SIZE;
+  const paged = filtered.slice(start, start + BLOG_PAGE_SIZE);
+
+  blogPostsList.innerHTML = paged.map(post => {
     const title   = currentLang === 'zh' && post.title_zh   ? post.title_zh   : post.title;
     const excerpt = currentLang === 'zh' && post.excerpt_zh ? post.excerpt_zh : (post.excerpt || '');
+    const tags = post.tags || (post.category ? [post.category] : []);
     return `
     <li class="blog-post-item${post.pinned ? ' blog-post-pinned' : ''}">
       <a href="#blog/${post.slug}" class="blog-post-link" data-slug="${post.slug}">
@@ -423,7 +544,9 @@ const renderBlogList = (posts) => {
           : ''}
         <div class="blog-content">
           <div class="blog-meta">
-            <p class="blog-category">${post.category || 'Article'}</p>
+            <div class="blog-tags">${tags.map(t =>
+              `<span class="tag-chip">${getTagLabel(t)}</span>`
+            ).join('')}</div>
             <span class="dot"></span>
             <time datetime="${post.date}">${formatDate(post.date)}</time>
           </div>
@@ -437,9 +560,15 @@ const renderBlogList = (posts) => {
   blogPostsList.querySelectorAll('.blog-post-link').forEach(link => {
     link.addEventListener('click', e => {
       e.preventDefault();
-      const slug = link.dataset.slug;
-      window.location.hash = `blog/${slug}`;
+      window.location.hash = `blog/${link.dataset.slug}`;
     });
+  });
+
+  renderPagination('blog-pagination', currentBlogPage, filtered.length, BLOG_PAGE_SIZE, (page) => {
+    currentBlogPage = page;
+    renderBlogList(manifestCache);
+    const blogHeader = document.querySelector('[data-page="blog"] .article-title');
+    if (blogHeader) blogHeader.scrollIntoView({ behavior: 'smooth' });
   });
 };
 
@@ -627,6 +756,8 @@ const loadBlogPost = async (slug) => {
 
 const showBlogList = (updateHash = true) => {
   exitReadingMode();
+  currentBlogPage = 1;
+  activeTag = 'All';
   if (blogListView) blogListView.style.display = '';
   if (blogPostView) blogPostView.style.display = 'none';
   if (tocScrollCleanup) { tocScrollCleanup(); tocScrollCleanup = null; }
@@ -673,8 +804,12 @@ const renderPostMeta = (slug) => {
   if (!blogPostMeta || !manifestCache) return;
   const post = manifestCache.find(p => p.slug === slug);
   if (!post) { blogPostMeta.innerHTML = ''; return; }
+  const tags = post.tags || (post.category ? [post.category] : []);
+  const tagsHtml = tags.map(t =>
+    `<span class="meta-tag">${getTagLabel(t)}</span>`
+  ).join('');
   blogPostMeta.innerHTML = `
-    <span class="meta-category">${post.category || 'Article'}</span>
+    <div class="meta-tags">${tagsHtml}</div>
     <span class="meta-date"><ion-icon name="calendar-outline"></ion-icon>${formatDate(post.date)}</span>
   `;
 };
