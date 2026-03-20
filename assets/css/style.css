@@ -2297,8 +2297,8 @@ main.reading-mode .sidebar { display: none !important; }
     display: block;
     position: sticky;
     top: 60px;
-    height: 100%;
-    max-height: max-content;
+    max-height: calc(100vh - 80px);
+    overflow-y: auto;
     align-self: flex-start;
     z-index: 1;
     min-width: 220px;
@@ -2315,6 +2315,18 @@ main.reading-mode .sidebar { display: none !important; }
     flex: 1;
   }
 }
+
+  /* Thin dark-theme scrollbar for the TOC sidebar */
+  main.reading-mode .blog-sidebar::-webkit-scrollbar { width: 4px; }
+  main.reading-mode .blog-sidebar::-webkit-scrollbar-track { background: transparent; }
+  main.reading-mode .blog-sidebar::-webkit-scrollbar-thumb {
+    background: hsla(0, 0%, 100%, 0.12);
+    border-radius: 4px;
+  }
+  main.reading-mode .blog-sidebar::-webkit-scrollbar-thumb:hover {
+    background: hsla(0, 0%, 100%, 0.25);
+  }
+  main.reading-mode .blog-sidebar { scrollbar-width: thin; scrollbar-color: hsla(0,0%,100%,.12) transparent; }
 
 /* ============================================================
    Table of Contents (TOC) — beautiful card design
