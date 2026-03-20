@@ -69,11 +69,22 @@
     "slug": "hello-world",
     "title": "Hello World — My First Blog Post",
     "title_zh": "Hello World — 第一篇博客",
-    "date": "2026-03-16",
+    "date": "2024-03-16",
     "category": "Life",
     "excerpt": "Welcome to my blog! This is my first post, written in Markdown and rendered dynamically.",
     "excerpt_zh": "欢迎来到我的博客！这是第一篇用 Markdown 编写并动态渲染的文章。",
     "cover": "./posts/covers/15-hand-nodepair-olive.png",
     "pinned": false
+  },
+  {
+    "slug": "反思",
+    "title": "Reflections",
+    "title_zh": "反思",
+    "date": "2025-04-23",
+    "category": "Life",
+    "excerpt": "Reflections on my exploration of new things and my苦恼 about my automation obsession.",
+    "excerpt_zh": "反思自己对新事物的探索性，以及对自己自动化追求的苦恼。",
+    "cover": "./posts/covers/06-sleeper-agents.png",
+    "pinned": true
   }
 ]
