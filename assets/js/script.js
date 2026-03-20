@@ -484,7 +484,20 @@ const extractMath = (md) => {
 
 // Phase 2: After marked produces HTML, render each math placeholder with KaTeX.
 const renderMathPlaceholders = (html, store) => {
-  if (typeof katex === 'undefined' || !store.length) return html;
+  if (!store.length) return html;
+
+  // Fallback: if KaTeX hasn't loaded, show raw LaTeX instead of empty elements
+  if (typeof katex === 'undefined') {
+    html = html.replace(
+      /(?:<p>\s*)?<div data-math-id="(\d+)"><\/div>(?:\s*<\/p>)?/g,
+      (_, i) => `<div class="katex-display-wrapper"><pre>${store[+i].content}</pre></div>`
+    );
+    html = html.replace(
+      /<span data-math-id="(\d+)"><\/span>/g,
+      (_, i) => `<code>${store[+i].content}</code>`
+    );
+    return html;
+  }
 
   // Block math: <div data-math-id="N"></div> (may be wrapped in <p> as fallback)
   html = html.replace(
@@ -522,7 +535,15 @@ const renderMathPlaceholders = (html, store) => {
 
 // Phase 3: Fix relative image paths from posts/ subdirectory
 const fixImagePaths = (html) =>
-  html.replace(/(<img\s[^>]*?)src=(["'])images\//gi, '$1src=$2./posts/images/');
+  html.replace(
+    /(<img\s[^>]*?src\s*=\s*)(["'])(images\/.*?)\2/gi,
+    (_, prefix, quote, url) => {
+      const fixedUrl = url
+        .replace(/^images\//, './posts/images/')
+        .replace(/ /g, '%20');
+      return `${prefix}${quote}${fixedUrl}${quote}`;
+    }
+  );
 
 // Configure marked (now guaranteed available via defer ordering)
 if (typeof marked !== 'undefined') {
@@ -567,9 +588,16 @@ const loadBlogPost = async (slug) => {
       }
     }
 
-    // Pipeline: extract math → parse markdown → render math → fix images
+    // Pipeline: extract math → fix image URLs → parse markdown → render math → fix images
     const { md: safeMd, store } = extractMath(md);
-    let html = (typeof marked !== 'undefined') ? marked.parse(safeMd) : `<pre>${safeMd}</pre>`;
+
+    // Encode spaces in markdown image URLs so marked.js can parse them
+    const imgReady = safeMd.replace(
+      /!\[([^\]]*)\]\(([^)]+)\)/g,
+      (_, alt, url) => `![${alt}](${url.replace(/ /g, '%20')})`
+    );
+
+    let html = (typeof marked !== 'undefined') ? marked.parse(imgReady) : `<pre>${imgReady}</pre>`;
     html = renderMathPlaceholders(html, store);
     html = fixImagePaths(html);
 
